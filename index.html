@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="icon"
+      href="resources/favicon.ico"
+      type="image/x-icon"
+      sizes="96x96"
+    />
+
+    <title>Guess The Word Game | Prabin Regmi</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      body {
+        height: 100vh;
+        background-image: url("resources/bg-guess-the-word.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+      }
+      .container {
+        display: flex;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+      .game-area {
+        max-width: 600px;
+        width: 100%;
+        padding: 40px 30px;
+        border-radius: 10px;
+        color: white;
+        margin: auto;
+        background-color: #161d2d;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+      }
+      .logo {
+        width: 200px;
+      }
+      .word-display {
+        font-size: 32px;
+
+        letter-spacing: 15px;
+        background-color: #4a5567;
+        box-shadow: 0px 4px 0px 0px #030616;
+        padding: 15px 25px;
+        padding-left: 35px;
+        text-align: center;
+        border-radius: 5px;
+        width: 100%;
+      }
+      .error-block {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0px 10px;
+      }
+      .input-block {
+        display: flex;
+        gap: 5px;
+      }
+      .input-block input {
+        max-width: 40px;
+        height: 40px;
+        font-size: 25px;
+        text-align: center;
+        vertical-align: middle;
+        border: 3px solid #495366;
+        background-color: transparent;
+        border-radius: 6px;
+        color: white;
+      }
+      .input-block input.wrong {
+        background-color: red;
+      }
+      .input-block input.right {
+        background-color: green;
+      }
+      .input-block input:focus {
+        border: 2px solid #ba4ae2;
+        outline: none;
+      }
+      .tries,
+      .mistakes {
+        font-size: 23px;
+      }
+      .tries > div {
+        display: flex;
+        gap: 20px;
+
+        align-items: center;
+      }
+      .tries > div .dots {
+        display: flex;
+        gap: 8px;
+      }
+      .tries > div .dots span {
+        display: block;
+        width: 10px;
+        height: 10px;
+        border-radius: 100%;
+        background-color: #343c4b;
+      }
+      .button-block {
+        display: flex;
+        gap: 20px;
+      }
+      .button-block button {
+        padding: 12px 30px;
+        filter: drop-shadow(0px 4px 0px #7b248a);
+        background-color: #ba4ae2;
+        border: none;
+        color: white;
+        font-size: 20px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .button-block button:disabled {
+        border: 1px solid #999999;
+        background-color: #cccccc;
+        color: #666666;
+        filter: drop-shadow(0px 4px 0px #5e5e5e);
+      }
+      .game-over {
+        font-size: 25px;
+        display: none;
+      }
+      @media (max-width: 767px) {
+        body {
+          background-image: url("resources/bg-guess-the-word-small.jpg");
+        }
+        .container {
+          padding: 20px;
+        }
+        .input-block {
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+        }
+        .input-block input {
+          height: 25px;
+          width: 25px;
+          font-size: 20px;
+          border-width: 1px;
+        }
+        .error-block {
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+        }
+        .word-display {
+          font-size: 20px;
+          padding: 10px;
+          letter-spacing: 10px;
+          padding-left: 20px;
+        }
+        .button-block {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <section class="game-area">
+        <img src="resources/word-scramblle-logo.svg" alt="Logo" class="logo" />
+        <div class="word-display"></div>
+        <div class="error-block">
+          <div class="tries">
+            <div>
+              <div class="text">Tries (0/5)</div>
+              <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+          <div class="mistakes">Mistakes:</div>
+        </div>
+        <div class="input-block"></div>
+        <div class="game-over"></div>
+        <div class="button-block">
+          <button class="play-button">Random</button>
+          <button class="reset">Reset</button>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const gameWords = [
+        "example",
+        "find",
+        "newbie",
+        "challange",
+        "renu",
+        "sadikshya",
+        "game",
+      ];
+      let tries = 0;
+      let mistakes = [];
+      const wordDisplay = document.querySelector(".word-display");
+      const inputContainer = document.querySelector(".input-block");
+      const gameOverBlock = document.querySelector(".game-over");
+      const randomButton = document.querySelector(".play-button");
+      const resetButton = document.querySelector(".reset");
+      const outputTries = document.querySelector(".tries .text");
+      const outputTriesDots = document.querySelectorAll(".tries .dots span");
+
+      randomButton.addEventListener("click", resetGame);
+      resetButton.addEventListener("click", resetInput);
+
+      startGame();
+
+      function generateWord(words) {
+        const randomIndex = Math.floor(Math.random() * words.length);
+        let choosenWord = words[randomIndex].split("");
+        return choosenWord;
+      }
+
+      function scrambleWords(randomWord) {
+        for (let i = 0; i < randomWord.length; i++) {
+          const randomIndex = Math.floor(Math.random() * (i + 1));
+          [randomWord[randomIndex], randomWord[i]] = [
+            randomWord[i],
+            randomWord[randomIndex],
+          ];
+        }
+        return randomWord.join("");
+      }
+      function inputFields(correctWord) {
+        for (let i = 0; i < correctWord.length; i++) {
+          inputContainer.innerHTML += "<input type='text' maxlength='1' />";
+        }
+        const inputValue = document.querySelectorAll("input");
+        inputValue.forEach((input, i) => {
+          input.addEventListener("input", () => {
+            input.value = input.value.replace(/[^A-Za-z]/g, "").toLowerCase();
+
+            if (input.value === "") {
+              input.classList.remove("wrong");
+            } else if (input.value === correctWord[i]) {
+              input.classList.remove("wrong");
+              input.classList.add("right");
+
+              if (i < inputValue.length - 1) {
+                inputValue[i + 1].focus();
+              }
+              handleSuccess(inputValue, correctWord);
+            } else {
+              input.classList.add("wrong");
+              input.classList.remove("right");
+              handleMistakes(input.value);
+              handleTries();
+            }
+          });
+
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace" && i > 0 && input.value === "") {
+              inputValue[i - 1].focus();
+            }
+          });
+        });
+      }
+      function addDotsClass() {
+        outputTriesDots.forEach((dot, index) => {
+          if (index < tries) {
+            dot.style.backgroundColor = "#B047DE";
+          } else {
+            dot.style.backgroundColor = "#343C4B";
+          }
+        });
+      }
+
+      function handleTries() {
+        tries++;
+
+        outputTries.innerHTML = `<p>Tries (${tries}/5) </p>`;
+        addDotsClass();
+        if (tries === 5) {
+          inputContainer.style.display = "none";
+          gameOverBlock.innerHTML = "You Lose";
+          randomButton.innerText = "Play Again";
+          resetButton.disabled = "disabled";
+          gameOverBlock.style.display = "block";
+        }
+      }
+      function handleMistakes(letter) {
+        const mistakesBlock = document.querySelector(".mistakes");
+        letter = letter.toLowerCase();
+
+        if (!mistakes.includes(letter)) {
+          mistakes.push(letter);
+          mistakesBlock.innerHTML = `Mistakes: ${mistakes.join(", ")}`;
+        }
+      }
+      function handleSuccess(inputWord, correctWord) {
+        let currentGuess = Array.from(inputWord).map((input) => input.value);
+        if (correctWord.join("") === currentGuess.join("")) {
+          gameOverBlock.style.display = "block";
+          gameOverBlock.style.display = "block";
+          resetButton.disabled = "disabled";
+          gameOverBlock.innerHTML = "🎉 Success";
+          randomButton.innerText = "Play Again";
+
+          inputContainer
+            .querySelectorAll("input")
+            .forEach((inp) => (inp.disabled = true));
+        }
+      }
+      function resetGame() {
+        tries = 0;
+        mistakes = [];
+
+        inputContainer.innerHTML = "";
+        gameOverBlock.innerHTML = "";
+        gameOverBlock.innerHTML = "";
+
+        outputTries.innerHTML = `Tries (0/5)`;
+        document.querySelector(".mistakes").innerHTML = `Mistakes:`;
+        inputContainer.style.display = "flex";
+        gameOverBlock.style.display = "none";
+        outputTriesDots.forEach((dot) => {
+          dot.style.backgroundColor = "#343c4b";
+        });
+        randomButton.innerText = "Random";
+        resetButton.disabled = "";
+        startGame();
+      }
+      function startGame() {
+        choosenWord = generateWord(gameWords);
+        scrambledWord = scrambleWords([...choosenWord]);
+        wordDisplay.innerHTML = `${scrambledWord}`;
+        inputFields(choosenWord);
+      }
+      function resetInput() {
+        tries = 0;
+        outputTries.innerHTML = `Tries (0/5)`;
+        document.querySelector(".mistakes").innerHTML = `Mistakes:`;
+        mistakes = [];
+        outputTriesDots.forEach((dot) => {
+          dot.style.backgroundColor = "#343c4b";
+        });
+        const inputValue = document.querySelectorAll("input");
+        gameOverBlock.style.display = "none";
+        inputValue.forEach((input) => {
+          input.value = null;
+          input.classList.remove("wrong");
+          input.classList.remove("right");
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 
 A fun, interactive word puzzle game built using vanilla JavaScript, HTML, and CSS. In this game, players are shown a **scrambled word** and must guess the correct word by typing one letter into each input box.
 
-![screenshot](resources/bg-guess-the-word.jpg)
+![screenshot](resources/ss.png)
 
 ---
 
