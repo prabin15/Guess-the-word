@@ -63,7 +63,7 @@ const gameWords = [
 │ ├── favicon.ico
 │ └── word-scramblle-logo.svg
 
-🙋‍♂️ Author
-Prabin Regmi
-Front-End Developer
-This game was created as a fun and educational project to practice DOM manipulation and interactive UI design.
+## 🙋‍♂️ Author
+
+- Prabin Regmi
+- This game was created as a fun and educational project to practice DOM manipulation and interactive UI design.
