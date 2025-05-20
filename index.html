@@ -203,6 +203,7 @@
     </div>
 
     <script>
+      // Game Words
       const gameWords = [
         "example",
         "find",
@@ -212,6 +213,7 @@
         "sadikshya",
         "game",
       ];
+      // Intiating and selecting DOM
       let tries = 0;
       let mistakes = [];
       const wordDisplay = document.querySelector(".word-display");
@@ -227,12 +229,14 @@
 
       startGame();
 
+      // Function to generate random word
       function generateWord(words) {
         const randomIndex = Math.floor(Math.random() * words.length);
         let choosenWord = words[randomIndex].split("");
         return choosenWord;
       }
 
+      // Function to Scramble the selected word
       function scrambleWords(randomWord) {
         for (let i = 0; i < randomWord.length; i++) {
           const randomIndex = Math.floor(Math.random() * (i + 1));
@@ -243,6 +247,8 @@
         }
         return randomWord.join("");
       }
+
+      // Generate and validate input fields
       function inputFields(correctWord) {
         for (let i = 0; i < correctWord.length; i++) {
           inputContainer.innerHTML += "<input type='text' maxlength='1' />";
@@ -277,6 +283,8 @@
           });
         });
       }
+
+      // Function to add colors to dots in error
       function addDotsClass() {
         outputTriesDots.forEach((dot, index) => {
           if (index < tries) {
@@ -287,6 +295,7 @@
         });
       }
 
+      // Counting attempts
       function handleTries() {
         tries++;
 
@@ -300,6 +309,8 @@
           gameOverBlock.style.display = "block";
         }
       }
+
+      // Handle Mistakes
       function handleMistakes(letter) {
         const mistakesBlock = document.querySelector(".mistakes");
         letter = letter.toLowerCase();
@@ -309,6 +320,8 @@
           mistakesBlock.innerHTML = `Mistakes: ${mistakes.join(", ")}`;
         }
       }
+
+      // Handle Successful word Guess
       function handleSuccess(inputWord, correctWord) {
         let currentGuess = Array.from(inputWord).map((input) => input.value);
         if (correctWord.join("") === currentGuess.join("")) {
@@ -323,6 +336,8 @@
             .forEach((inp) => (inp.disabled = true));
         }
       }
+
+      // Reset game
       function resetGame() {
         tries = 0;
         mistakes = [];
@@ -342,12 +357,16 @@
         resetButton.disabled = "";
         startGame();
       }
+
+      // Function to start game
       function startGame() {
         choosenWord = generateWord(gameWords);
         scrambledWord = scrambleWords([...choosenWord]);
         wordDisplay.innerHTML = `${scrambledWord}`;
         inputFields(choosenWord);
       }
+
+      // Function to just reset input
       function resetInput() {
         tries = 0;
         outputTries.innerHTML = `Tries (0/5)`;
