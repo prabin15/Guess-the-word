@@ -53,16 +53,6 @@ const gameWords = [
 ];
 ```
 
-## File Structure
-
-📁 Guess-The-Word/
-├── index.html
-├── resources/
-│ ├── bg-guess-the-word.jpg
-│ ├── bg-guess-the-word-small.jpg
-│ ├── favicon.ico
-│ └── word-scramblle-logo.svg
-
 ## 🙋‍♂️ Author
 
 - Prabin Regmi
